@@ -19,7 +19,7 @@ vector<Occ> os;
 vector<int> ms;
 
 bool check(int l) {
-    // printf("=== check %i ===\n", l);
+
     vector<int> cs(n, 0);
     int c = 0;
 
@@ -33,13 +33,6 @@ bool check(int l) {
             c++;
         }
 
-        // printf("p: %i, %i\n", os[e].p, os[b].p);
-        // printf("c: %i, cs: ", c);
-        // for(int i = 0; i < n; ++i) {
-        //     printf("%i ", cs[i]);
-        // }
-        // printf("\n");
-
         while(os[e].p-os[b].p > l) {
             // printf("dequeue\n");
             cs[os[b].w]--;
@@ -49,21 +42,13 @@ bool check(int l) {
             b++;
         }
 
-        // printf("c: %i, cs: ", c);
-        // for(int i = 0; i < n; ++i) {
-        //     printf("%i ", cs[i]);
-        // }
-        // printf("\n");
-
         if(c == n) {
-            // printf("too big\n");
             return true;
         }
 
         e++;
     }
 
-    // printf("too small\n");
     return false;
 }
 
@@ -92,17 +77,10 @@ void do_case() {
 
     sort(os.begin(), os.end());
 
-    // for(int i = 0; i < os.size(); ++i) {
-    //     printf("(%i, %i); ", os[i].p, os[i].w);
-    // }
-    //
-    // printf("\n");
-
     int min = 1, max = os.back().p;
 
     while(min != max) {
         int a = (min+max)/2;
-        // printf("%i, %i, (%i, %i, %i)\n", n, (int)os.size(), min, a, max);
 
         if(check(a)) {
             max = a;
