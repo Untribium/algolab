@@ -28,13 +28,11 @@ bool check(int l) {
     while(e < (int)os.size()) {
         cs[os[e].w]++;
 
-        // printf("enqueue\n");
         if(cs[os[e].w] == 1) {
             c++;
         }
 
         while(os[e].p-os[b].p > l) {
-            // printf("dequeue\n");
             cs[os[b].w]--;
             if(!cs[os[b].w]) {
                 c--;
@@ -48,7 +46,6 @@ bool check(int l) {
 
         e++;
     }
-
     return false;
 }
 
@@ -89,7 +86,6 @@ void do_case() {
             min = a+1;
         }
     }
-
     printf("%i\n", max+1);
 }
 
