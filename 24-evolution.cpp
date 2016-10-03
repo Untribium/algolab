@@ -1,76 +1,69 @@
-// #include<stdio.h>
-#include<iostream>
-#include<string.h>
+#include<vector>
+#include<stdio.h>
 #include<unordered_map>
+#include<algorithm>
 
 using namespace std;
 
-unordered_map<string, int> s;
-unordered_map<string, string> a;
+unordered_map<string, int> indices;
+vector<int> species;
+vector<int> ancestor;
+vector<char*> names;
 
 void do_case() {
+
     int n, q;
-    // scanf("%i %i\n", &n, &q);
-    cin >> n;
-    cin >> q;
+    scanf("%i %i", &n, &q);
 
-    s.clear();
-    a.clear();
+    species.clear();
+    species.assign(n+1, 0);
 
-    for(int i = 0; i < n; ++i) {
-        // char name[11];
-        string name;
+    ancestor.clear();
+    ancestor.assign(n+1, 0);
+
+    names.clear();
+    names.resize(n+1);
+
+    for(int i = 1; i <= n; ++i) {
+        char* name = new char[11];
         int age;
 
-        // scanf("%s %i", &name, &age);
+        scanf("%s %i", name, &age);
 
-        cin >> name;
-        cin >> age;
-
-        s.insert({name, age});
+        indices.insert({string(name), i});
+        names[i] = name;
+        species[i]= age;
     }
 
     for(int i = 0; i < n-1; ++i) {
-        // char c[11], p[11];
-        string c, p;
+        char n1[11], n2[11];
 
-        cin >> c;
-        cin >> p;
+        scanf("%s %s", &n1, &n2);
 
-        // scanf("%s %s", &c, &p);
-
-        a.insert({c, p});
+        ancestor[indices[string(n1)]] = indices[string(n2)];
     }
 
     for(int i = 0; i < q; ++i) {
-        // char* last = new char[11];
-        string last;
+        char name[11];
         int age;
 
-        // scanf("%s %i", last, &age);
-        cin >> last;
-        cin >> age;
+        scanf("%s %i", &name, &age);
 
-        while(a.count(last) && s[a[last]] <= age) {
-            last = a[last];
+        int last_i = indices[string(name)];
+
+        while(ancestor[last_i] && species[ancestor[last_i]] <= age) {
+            last_i = ancestor[last_i];
         }
 
-        // printf("%s ", last);
-        cout << last << " ";
+        printf("%s ", names[last_i]);
     }
 
-    // printf("\n");
-    cout << "\n";
-
+    printf("\n");
 }
 
 int main() {
-
-    std::ios_base::sync_with_stdio(false);
-
     int t;
-    // scanf("%i", &t);
-    cin >> t;
+    scanf("%i", &t);
 
     while (t--) {
         do_case();
