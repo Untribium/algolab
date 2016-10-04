@@ -1,7 +1,5 @@
 #include<vector>
 #include<stdio.h>
-#include<math.h>
-#include<limits.h>
 #include<queue>
 
 using namespace std;
@@ -26,33 +24,26 @@ void do_case() {
     int n;
     scanf("%i", &n);
 
-    if(n == 1) {
-        printf("yes\n");
-        return;
-    }
-
     ts.assign(n, 0);
-
-    for(int i = 0; i < n; ++i) {
-        scanf("%i", &ts[i]);
-    }
-
-    for(int i = 1; i < n; ++i) {
-        ts[i] = min(ts[i], ts[(i-1)/2]-1);
-    }
 
     while(q.size()) {
         q.pop();
     }
 
-    for(int i = (n-1)/2; i < n; ++i) {
-        q.push(Bomb(i));
+    scanf("%i", &ts[0]);
+
+    for(int i = 1; i < n; ++i) {
+        scanf("%i", &ts[i]);
+        ts[i] = min(ts[i], ts[(i-1)/2]-1);
+        if(i >= (n-1)/2) {
+            q.push(Bomb(i));
+        }
     }
 
     int t = 0;
     ds.assign(n, false);
 
-    while(q.size()) {
+    while(q.size() && t < n-1) {
         int i = q.top().i;
         q.pop();
         ds[i] = true;
@@ -60,10 +51,6 @@ void do_case() {
         if(ts[i] <= t) {
             printf("no\n");
             return;
-        }
-
-        if(i == 0) {
-            break;
         }
 
         if(ds[i+((i%2)*2-1)]) {
