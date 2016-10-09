@@ -1,5 +1,4 @@
 #include<stdio.h>
-// #include<iostream>
 #include<math.h>
 #include<stdexcept>
 
@@ -8,6 +7,13 @@
 using namespace std;
 
 typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+
+double floor_to_double(const K::FT& x) {
+    double a = floor(CGAL::to_double(x));
+    while (a > x) a -= 1;
+    while (a+1 <= x) a += 1;
+    return a;
+}
 
 int main() {
 
@@ -68,9 +74,7 @@ int main() {
         }
 
         if(hit) {
-            printf("%.0lf %.0lf\n", floor(CGAL::to_double(c.x())), floor(CGAL::to_double(c.y())));
-            // cout.precision(0);
-            // cout << floor(CGAL::to_double(c.x())) << " " << floor(CGAL::to_double(c.y())) << endl;
+            printf("%.0lf %.0lf\n", floor_to_double(c.x()), floor_to_double(c.y()));
         }
         else {
             printf("no\n");
