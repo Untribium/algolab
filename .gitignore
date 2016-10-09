@@ -1,3 +1,18 @@
-*.in
-*.out
-*.o
+#*.in
+#*.out
+#*.o
+
+# ignore everything
+*
+
+# except...
+!.gitignore
+
+!*.pdf
+!*.cpp
+
+# also in subdirs
+!*/
+
+# except for CMake subdir
+*CMakeFiles*
