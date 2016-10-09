@@ -33,39 +33,37 @@ int main() {
         for(int i = 0; i < n; ++i) {
             scanf("%ld %ld %ld %ld", &x, &y, &a, &b);
 
-            if(!hit || c != p) {
-                K::Segment_2 s(K::Point_2(x, y), K::Point_2(a, b));
+            K::Segment_2 s(K::Point_2(x, y), K::Point_2(a, b));
 
-                if(CGAL::do_intersect(r, s)) {
-                    auto o = CGAL::intersection(r, s);
-                    K::FT tmp_d;
+            if(CGAL::do_intersect(r, s)) {
+                auto o = CGAL::intersection(r, s);
+                K::FT tmp_d;
 
-                    if(const K::Point_2* op = boost::get<K::Point_2>(&*o)) {
-                        tmp_d = CGAL::squared_distance(p, *op);
-                        if(!hit || tmp_d < d) {
-                            c = *op;
-                            d = tmp_d;
-                        }
+                if(const K::Point_2* op = boost::get<K::Point_2>(&*o)) {
+                    tmp_d = CGAL::squared_distance(p, *op);
+                    if(!hit || tmp_d < d) {
+                        c = *op;
+                        d = tmp_d;
                     }
-                    else if (const K::Segment_2* os = boost::get<K::Segment_2>(&*o)) {
-                        tmp_d = CGAL::squared_distance(p, (*os)[0]);
-                        if(!hit || tmp_d < d) {
-                            c = (*os)[0];
-                            d = tmp_d;
-                        }
-
-                        tmp_d = CGAL::squared_distance(p, (*os)[1]);
-                        if(tmp_d < d) {
-                            c = (*os)[1];
-                            d = tmp_d;
-                        }
-                    }
-                    else {
-                        throw runtime_error("invalid intersect");
-                    }
-
-                    hit = true;
                 }
+                else if (const K::Segment_2* os = boost::get<K::Segment_2>(&*o)) {
+                    tmp_d = CGAL::squared_distance(p, (*os)[0]);
+                    if(!hit || tmp_d < d) {
+                        c = (*os)[0];
+                        d = tmp_d;
+                    }
+
+                    tmp_d = CGAL::squared_distance(p, (*os)[1]);
+                    if(tmp_d < d) {
+                        c = (*os)[1];
+                        d = tmp_d;
+                    }
+                }
+                else {
+                    throw runtime_error("invalid intersect");
+                }
+
+                hit = true;
             }
         }
 
