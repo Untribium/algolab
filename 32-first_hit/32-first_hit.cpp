@@ -3,10 +3,12 @@
 #include<stdexcept>
 
 #include<CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include<CGAL/Exact_predicates_inexact_constructions_kernel.h>
 
 using namespace std;
 
 typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel IK;
 
 double floor_to_double(const K::FT& x) {
     double a = floor(CGAL::to_double(x));
@@ -29,8 +31,11 @@ int main() {
         scanf("%ld %ld %ld %ld", &x, &y, &a, &b);
 
         K::Point_2 p(x, y), q(a, b);
-
         K::Ray_2 r(p, q);
+
+        IK::Point_2 ip(x, y), iq(a, b);
+        IK::Ray_2 ir(ip, iq);
+        IK::Direction_2 iw(ir);
 
         K::Point_2 c;
         K::FT d;
@@ -39,34 +44,37 @@ int main() {
         for(int i = 0; i < n; ++i) {
             scanf("%ld %ld %ld %ld", &x, &y, &a, &b);
 
-            K::Segment_2 s(K::Point_2(x, y), K::Point_2(a, b));
+            IK::Segment_2 is(IK::Point_2(x, y), IK::Point_2(a, b));
 
-            if(CGAL::do_intersect(r, s)) {
-                auto o = CGAL::intersection(r, s);
+            K::Point_2 p1(x, y);
+            K::Point_2 p2(a, b);
+
+            if(CGAL::do_intersect(ir, is)) {
                 K::FT tmp_d;
 
-                if(const K::Point_2* op = boost::get<K::Point_2>(&*o)) {
-                    tmp_d = CGAL::squared_distance(p, *op);
+                IK::Direction_2 ws(is);
+                if(ws == iw || ws == -iw) {
+                    tmp_d = CGAL::squared_distance(p, p1);
                     if(!hit || tmp_d < d) {
-                        c = *op;
-                        d = tmp_d;
-                    }
-                }
-                else if (const K::Segment_2* os = boost::get<K::Segment_2>(&*o)) {
-                    tmp_d = CGAL::squared_distance(p, (*os)[0]);
-                    if(!hit || tmp_d < d) {
-                        c = (*os)[0];
+                        c = p1;
                         d = tmp_d;
                     }
 
-                    tmp_d = CGAL::squared_distance(p, (*os)[1]);
+                    tmp_d = CGAL::squared_distance(p, p2);
                     if(tmp_d < d) {
-                        c = (*os)[1];
+                        c = p2;
                         d = tmp_d;
                     }
                 }
                 else {
-                    throw runtime_error("invalid intersect");
+                    K::Segment_2 s(p1, p2);
+                    auto tmp = CGAL::intersection(r, s);
+                    const K::Point_2* o = boost::get<K::Point_2>(&*tmp);
+                    tmp_d = CGAL::squared_distance(p, *o);
+                    if(!hit || tmp_d < d) {
+                        c = *o;
+                        d = tmp_d;
+                    }
                 }
 
                 hit = true;
@@ -80,6 +88,4 @@ int main() {
             printf("no\n");
         }
     }
-
-    return 0;
 }
