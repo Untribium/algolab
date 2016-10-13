@@ -46,10 +46,10 @@ int main() {
 
             IK::Segment_2 is(IK::Point_2(x, y), IK::Point_2(a, b));
 
-            K::Point_2 p1(x, y);
-            K::Point_2 p2(a, b);
-
             if(CGAL::do_intersect(ir, is)) {
+                K::Point_2 p1(x, y);
+                K::Point_2 p2(a, b);
+
                 K::FT tmp_d;
 
                 IK::Direction_2 ws(is);
