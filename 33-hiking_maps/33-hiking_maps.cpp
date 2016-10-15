@@ -9,15 +9,23 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel IK;
 bool debug = false;
 
 struct Leg {
-    Leg(IK::Point_2 p_a, IK::Point_2 p_b) {
-        a = p_a;
-        b = p_b;
+    Leg(int ax, int ay, int bx, int by) {
+        a = IK::Point_2(ax, ay);
+        b = IK::Point_2(bx, by);
     }
     IK::Point_2 a;
     IK::Point_2 b;
 };
 
 struct Map {
+    Map(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int x5, int y5) {
+        q0 = IK::Point_2(x0, y0);
+        q1 = IK::Point_2(x1, y1);
+        q2 = IK::Point_2(x2, y2);
+        q3 = IK::Point_2(x3, y3);
+        q4 = IK::Point_2(x4, y4);
+        q5 = IK::Point_2(x5, y5);
+    }
     IK::Point_2 q0;
     IK::Point_2 q1;
     IK::Point_2 q2;
@@ -92,7 +100,7 @@ void do_case() {
         int x, y;
         scanf("%i %i", &x, &y);
 
-        legs.push_back(Leg(IK::Point_2(old_x, old_y), IK::Point_2(x, y)));
+        legs.push_back(Leg(old_x, old_y, x, y));
     }
 
     maps.clear();
@@ -111,33 +119,25 @@ void do_case() {
         scanf("%i %i %i %i", &x2, &y2, &x3, &y3);
         scanf("%i %i %i %i", &x4, &y4, &x5, &y5);
 
-        if(debug) printf("- create points...");
+        if(debug) printf("- create map\n");
 
-        Map m;
-        m.q0 = IK::Point_2(x0, y0);
-        m.q1 = IK::Point_2(x1, y1);
-        m.q2 = IK::Point_2(x2, y2);
-        m.q3 = IK::Point_2(x3, y3);
-        m.q4 = IK::Point_2(x4, y4);
-        m.q5 = IK::Point_2(x5, y5);
-
-        if(debug) printf("done\n");
+        Map m(x0, y0, x1, y1, x2, y2, x3, y3, x4, y4, x5, y5);
 
         if(debug) printf("- fix edge direction\n");
 
         // fix directions, can't be collinear since no qx is a vertex
         if(CGAL::right_turn(m.q0, m.q1, m.q2)) {
-            if(debug) printf("-- swap e1\n");
+            if(debug) printf("- - swap #1\n");
             swap(&m.q0, &m.q1);
         }
 
         if(CGAL::right_turn(m.q2, m.q3, m.q4)) {
-            if(debug) printf("-- swap e2\n");
+            if(debug) printf("- - swap #2\n");
             swap(&m.q2, &m.q3);
         }
 
         if(CGAL::right_turn(m.q4, m.q5, m.q0)) {
-            if(debug) printf("-- swap e3\n");
+            if(debug) printf("- - swap #3\n");
             swap(&m.q4, &m.q5);
         }
 
@@ -153,14 +153,12 @@ void do_case() {
             if(covers(maps[i], legs[j])) {
                 maps[i].covers.push_back(j);
 
-                if(debug) printf("-- map #%i covers leg #%i\n", i, j);
+                if(debug) printf("- - map #%i covers leg #%i\n", i, j);
             }
         }
     }
 
     if(debug) printf("- binary search\n");
-
-    // binary search for min number of maps
 
     int c_min = 1, c_max = maps.size();
 
