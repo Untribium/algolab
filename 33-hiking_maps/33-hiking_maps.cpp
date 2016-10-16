@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<limits.h>
 
 #include<CGAL/Exact_predicates_inexact_constructions_kernel.h>
 
@@ -53,35 +54,6 @@ int m, n;
 
 vector<Leg> legs;
 vector<Map> maps;
-
-bool check(int c) {
-    int count = 0;
-    vector<int> covered(legs.size(), 0);
-
-    for(int i = 0; i < maps.size(); ++i) {
-        for(int j : maps[i].covers) {
-            covered[j]++;
-            if(covered[j] == 1) {
-                count++;
-            }
-        }
-
-        if(i-c >= 0) {
-            for(int j : maps[i-c].covers) {
-                covered[j]--;
-                if(covered[j] == 0) {
-                    count--;
-                }
-            }
-        }
-
-        if(count == legs.size()) {
-            return true;
-        }
-    }
-
-    return false;
-}
 
 void do_case() {
     scanf("%i %i", &m, &n);
@@ -158,22 +130,65 @@ void do_case() {
         }
     }
 
-    if(debug) printf("- binary search\n");
+    // vector<bool> cov(legs.size(), false);
+    //
+    // for(Map m : maps) {
+    //     for(int i : m.covers) {
+    //         cov[i] = true;
+    //     }
+    // }
+    //
+    // for(bool b : cov) {
+    //     if(!b) {
+    //         printf("fail\n");
+    //     }
+    // }
 
-    int c_min = 1, c_max = maps.size();
+    if(debug) printf("- sliding window\n");
 
-    while(c_min != c_max) {
-        int a = (c_min+c_max)/2;
+    // sliding window
 
-        if(check(a)) {
-            c_max = a;
+    int l = 0, r = 0, count = 0; // left, right, count
+    int min_cost = INT_MAX; // min #maps
+
+    vector<int> covered(legs.size(), 0);
+
+    while(r < maps.size()) {
+        for(int i : maps[r].covers) {
+            covered[i]++;
+            if(covered[i] == 1) {
+                count++;
+            }
         }
-        else {
-            c_min = a+1;
+
+        while(l < r) {
+            bool obs = true; // obsolete
+            for(int i : maps[l].covers) {
+                if(covered[i] < 2) {
+                    obs = false;
+                    break;
+                }
+            }
+
+            if(obs) {
+                for(int i : maps[l].covers) {
+                    covered[i]--;
+                }
+                l++;
+            }
+            else {
+                break;
+            }
         }
+
+        if(count == legs.size()) {
+            min_cost = min(min_cost, r-l+1);
+        }
+
+        r++;
     }
 
-    printf("%i\n", c_min);
+    printf("%i\n", min_cost);
 }
 
 int main() {
