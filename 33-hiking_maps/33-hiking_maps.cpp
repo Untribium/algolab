@@ -7,7 +7,7 @@ using namespace std;
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel IK;
 
-bool debug = false;
+bool debug = true;
 
 struct Leg {
     Leg(int i, int ax, int ay, int bx, int by) {
@@ -123,7 +123,9 @@ void do_case() {
             swap(&m.q4, &m.q5);
         }
 
-        if(debug) printf("- (%.0f, %.0f) -> (%.0f, %.0f), (%.0f, %.0f) -> (%.0f, %.0f), (%.0f, %.0f) -> (%.0f, %.0f)\n", m.q0.x(), m.q0.y(), m.q1.x(), m.q1.y(), m.q2.x(), m.q2.y(), m.q3.x(), m.q3.y(), m.q4.x(), m.q4.y(), m.q5.x(), m.q5.y());
+        if(debug) printf("- e0: (%.0f, %.0f) -> (%.0f, %.0f)\n", m.q0.x(), m.q0.y(), m.q1.x(), m.q1.y());
+        if(debug) printf("- e1: (%.0f, %.0f) -> (%.0f, %.0f)\n", m.q2.x(), m.q2.y(), m.q3.x(), m.q3.y());
+        if(debug) printf("- e2: (%.0f, %.0f) -> (%.0f, %.0f)\n", m.q4.x(), m.q4.y(), m.q5.x(), m.q5.y());
 
         maps.push_back(m);
     }
