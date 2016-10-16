@@ -10,12 +10,14 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel IK;
 bool debug = false;
 
 struct Leg {
-    Leg(int ax, int ay, int bx, int by) {
+    Leg(int ax, int ay, int bx, int by, int i) {
         a = IK::Point_2(ax, ay);
         b = IK::Point_2(bx, by);
+        index = i;
     }
     IK::Point_2 a;
     IK::Point_2 b;
+    int index;
 };
 
 struct Map {
@@ -72,7 +74,7 @@ void do_case() {
         int x, y;
         scanf("%i %i", &x, &y);
 
-        legs.push_back(Leg(old_x, old_y, x, y));
+        legs.push_back(Leg(old_x, old_y, x, y, i-1));
     }
 
     maps.clear();
@@ -120,12 +122,10 @@ void do_case() {
 
     if(debug) printf("- calculate coverage\n");
 
-    for(int i = 0; i < maps.size(); ++i) {
-        for(int j = 0; j < legs.size(); ++j) {
-            if(covers(maps[i], legs[j])) {
-                maps[i].covers.push_back(j);
-
-                if(debug) printf("- - map #%i covers leg #%i\n", i, j);
+    for(Map& map : maps) {
+        for(Leg leg : legs) {
+            if(covers(map, leg)) {
+                map.covers.push_back(leg.index);
             }
         }
     }
@@ -146,33 +146,31 @@ void do_case() {
 
     if(debug) printf("- sliding window\n");
 
-    // sliding window
-
     int l = 0, r = 0, count = 0; // left, right, count
     int min_cost = INT_MAX; // min #maps
 
     vector<int> covered(legs.size(), 0);
 
     while(r < maps.size()) {
-        for(int i : maps[r].covers) {
-            covered[i]++;
-            if(covered[i] == 1) {
+        for(int j : maps[r].covers) {
+            covered[j]++;
+            if(covered[j] == 1) {
                 count++;
             }
         }
 
         while(l < r) {
             bool obs = true; // obsolete
-            for(int i : maps[l].covers) {
-                if(covered[i] < 2) {
+            for(int j : maps[l].covers) {
+                if(covered[j] < 2) {
                     obs = false;
                     break;
                 }
             }
 
             if(obs) {
-                for(int i : maps[l].covers) {
-                    covered[i]--;
+                for(int j : maps[l].covers) {
+                    covered[j]--;
                 }
                 l++;
             }
