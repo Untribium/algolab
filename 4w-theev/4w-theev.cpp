@@ -11,8 +11,8 @@ using namespace std;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel IK;
 typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 
-typedef  CGAL::Min_circle_2_traits_2<K> Traits;
-typedef  CGAL::Min_circle_2<Traits> Min_circle;
+typedef CGAL::Min_circle_2_traits_2<K> Traits;
+typedef CGAL::Min_circle_2<Traits> Min_circle;
 
 bool debug = false;
 
@@ -22,7 +22,7 @@ struct City {
         pos = IK::Point_2(x, y);
     }
     IK::Point_2 pos;
-    K::FT distance;
+    double distance;
 };
 
 
@@ -44,7 +44,7 @@ City their;
 
 K::FT min_r;
 
-K::FT bounding_radius(int begin, int end) {
+double bounding_radius(int begin, int end) {
     int l = end-begin;
     K::Point_2 points[l];
 
@@ -54,7 +54,7 @@ K::FT bounding_radius(int begin, int end) {
 
     Min_circle mc(points, points+l, true);
 
-    return mc.circle().squared_radius();
+    return CGAL::to_double(mc.circle().squared_radius());
 }
 
 // check if old antenna can cover up to index a
@@ -64,7 +64,7 @@ bool check(int a) {
 
     if(a < n-1) {
 
-        K::FT cur_r = bounding_radius(a+1, cities.size());
+        double cur_r = bounding_radius(a+1, cities.size());
         if(debug) printf("bounding radius (a=%i): %.2lf\n", a, CGAL::to_double(cur_r));
 
         if(cur_r <= cities[a].distance) {
