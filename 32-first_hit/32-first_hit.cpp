@@ -17,6 +17,8 @@ double floor_to_double(const K::FT& x) {
     return a;
 }
 
+vector<IK::Segment_2> segs;
+
 int main() {
 
     while(true) {
@@ -32,23 +34,40 @@ int main() {
 
         K::Point_2 p(x, y), q(a, b);
         K::Ray_2 r(p, q);
+        K::Segment_2 e(p, q);
 
         IK::Point_2 ip(x, y), iq(a, b);
         IK::Ray_2 ir(ip, iq);
         IK::Direction_2 iw(ir);
+
+        segs.clear();
+
+        for(int i = 0; i < n; ++i) {
+            scanf("%ld %ld %ld %ld", &x, &y, &a, &b);
+
+            segs.push_back(IK::Segment_2(IK::Point_2(x, y), IK::Point_2(a, b)));
+        }
+
+        random_shuffle(segs.begin(), segs.end());
 
         K::Point_2 c;
         K::FT d;
         bool hit = false;
 
         for(int i = 0; i < n; ++i) {
-            scanf("%ld %ld %ld %ld", &x, &y, &a, &b);
+            IK::Segment_2 is = segs[i];
 
-            IK::Segment_2 is(IK::Point_2(x, y), IK::Point_2(a, b));
+            x = is.source().x();
+            y = is.source().y();
+            a = is.target().x();
+            b = is.target().y();
 
-            if(CGAL::do_intersect(ir, is)) {
-                K::Point_2 p1(x, y);
-                K::Point_2 p2(a, b);
+            K::Point_2 p1(x, y);
+            K::Point_2 p2(a, b);
+
+            K::Segment_2 s(p1, p2);
+
+            if((hit && CGAL::do_intersect(e, s)) || (!hit && CGAL::do_intersect(ir, is))) {
 
                 K::FT tmp_d;
 
@@ -67,7 +86,6 @@ int main() {
                     }
                 }
                 else {
-                    K::Segment_2 s(p1, p2);
                     auto tmp = CGAL::intersection(r, s);
                     const K::Point_2* o = boost::get<K::Point_2>(&*tmp);
                     tmp_d = CGAL::squared_distance(p, *o);
@@ -78,6 +96,7 @@ int main() {
                 }
 
                 hit = true;
+                e = K::Segment_2(p, c);
             }
         }
 
