@@ -44,7 +44,7 @@ City their;
 
 K::FT min_r;
 
-double bounding_radius(int begin, int end) {
+K::FT bounding_radius(int begin, int end) {
     int l = end-begin;
     K::Point_2 points[l];
 
@@ -54,7 +54,7 @@ double bounding_radius(int begin, int end) {
 
     Min_circle mc(points, points+l, true);
 
-    return CGAL::to_double(mc.circle().squared_radius());
+    return mc.circle().squared_radius();
 }
 
 // check if old antenna can cover up to index a
@@ -64,7 +64,7 @@ bool check(int a) {
 
     if(a < n-1) {
 
-        double cur_r = bounding_radius(a+1, cities.size());
+        K::FT cur_r = bounding_radius(a+1, cities.size());
         if(debug) printf("bounding radius (a=%i): %.2lf\n", a, CGAL::to_double(cur_r));
 
         if(cur_r <= cities[a].distance) {
