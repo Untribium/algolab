@@ -1,23 +1,44 @@
 #include<stdio.h>
+#include<vector>
 
-#include<CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include<CGAL/Exact_predicates_exact_constructions_kernel_with_sqrt.h>
 #include<CGAL/Min_circle_2.h>
 #include<CGAL/Min_circle_2_traits_2.h>
 
-typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+using namespace std;
+
+typedef CGAL::Exact_predicates_exact_constructions_kernel_with_sqrt K;
 
 typedef CGAL::Min_circle_2_traits_2<K> Traits;
 typedef CGAL::Min_circle_2<Traits> Min_circle;
 
-void do_case() {
-    
+double ceil_to_double(const K::FT& x) {
+    double a = ceil(CGAL::to_double(x));
+    while (a-1 >= x) a -= 1;
+    while (a < x) a += 1;
+    return a;
 }
 
 int main() {
-    int t;
-    scanf("%i", &t);
+    while(true) {
+        int n;
+        scanf("%i", &n);
 
-    while(t--) {
-        do_case();
+        if(!n) {
+            return 0;
+        }
+
+        vector<K::Point_2> p;
+
+        for(int i = 0; i < n; ++i) {
+            long x, y;
+            scanf("%ld %ld", &x, &y);
+
+            p.push_back(K::Point_2(x, y));
+        }
+
+        Min_circle mc(&p[0], &p[n], true);
+
+        printf("%.0lf\n", ceil_to_double(sqrt(mc.circle().squared_radius())));
     }
 }
