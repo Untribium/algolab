@@ -20,25 +20,27 @@ vector<Occ> os;
 vector<int> ms;
 
 void do_case() {
-    ms.clear();
-    os.clear();
 
     scanf("%i", &n);
 
-    for(int i = 0; i < n; ++i) {
-        int m;
-        scanf("%i", &m);
+    ms.resize(n);
 
-        ms.push_back(m);
+    int l = 0;
+
+    for(int i = 0; i < n; ++i) {
+        scanf("%i", &ms[i]);
+        l += ms[i];
     }
+
+    os.resize(l);
+
+    l = 0;
 
     for(int i = 0; i < n; ++i) {
         for(int j = 0; j < ms[i]; ++j) {
-            Occ o;
-            o.w = i;
-            scanf("%i", &o.p);
-
-            os.push_back(o);
+            os[l].w = i;
+            scanf("%i", &os[l].p);
+            l++;
         }
     }
 
@@ -49,7 +51,7 @@ void do_case() {
 
     int b = 0, e = 0; // begin, end
 
-    while(e < (int)os.size()) {
+    while(e < os.size()) {
         cs[os[e].w]++;
 
         if(cs[os[e].w] == 1) {
