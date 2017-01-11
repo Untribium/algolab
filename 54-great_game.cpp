@@ -26,18 +26,13 @@ void do_case(int t) {
         e[from-1].push_back(to-1);
     }
 
-
-
-    int best[n];
-    int worst[n];
+    vector<int> best(n, 1000000);
+    vector<int> worst(n, -1);
 
     best[n-1] = 0;
     worst[n-1] = 0;
 
     for(int i = n-2; i >= 0; --i) {
-
-        best[i] = 1000000;
-        worst[i] = -1;
 
         for(int edge : e[i]) {
             if(worst[edge] < best[i]) {
