@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<vector>
 
-#include <boost/graph/adjacency_list.hpp>
+#include<boost/graph/adjacency_list.hpp>
 #include<boost/graph/biconnected_components.hpp>
 
 using namespace std;
