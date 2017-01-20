@@ -42,27 +42,27 @@ void do_case(int t) {
     }
 
     for(int ip = 0; ip < p; ++ip) {
-        priority_queue<pair<int, int> > pq; // pair is (-duration, node-id)
+        priority_queue<pair<int, pair<int, int> > > pq; // pair is (-duration, (node-id, edge-id))
 
         vector<bool> visited(n, false); // no trees visited
 
         int c_visited = 1;
         visited[hives[ip]] = true;
         for(pair<int, int> neighbor : neighbors[hives[ip]]) {
-            pq.push(make_pair(-duration[neighbor.second][ip], neighbor.first));
+            pq.push(make_pair(-duration[neighbor.second][ip], neighbor));
         }
 
         while(c_visited < n) {
-            pair<int, int> top = pq.top();
+            int top = pq.top().second.first;
             pq.pop();
 
-            if(!visited[top.second]) {
-                visited[top.second] = true;
+            if(!visited[top]) {
+                visited[top] = true;
                 c_visited++;
 
-                for(pair<int, int> neighbor : neighbors[top.second]) {
+                for(pair<int, int> neighbor : neighbors[top]) {
                     if(!visited[neighbor.first]) {
-                        pq.push(make_pair(-duration[neighbor.second][ip], neighbor.first));
+                        pq.push(make_pair(-duration[neighbor.second][ip], neighbor));
                     }
                 }
             }
@@ -70,12 +70,7 @@ void do_case(int t) {
         }
 
         while(pq.size()) { // remaining edges are not in the private network
-            for(int ie = 0; ie < e; ++ie) {
-                if(duration[ie][ip] == -pq.top().first) {
-                    duration[ie][ip] = 999999;
-                    break;
-                }
-            }
+            duration[pq.top().second.second][ip] = 999999;
             pq.pop();
         }
     }
