@@ -45,6 +45,7 @@ void do_case(int t) {
         priority_queue<pair<int, pair<int, int> > > pq; // pair is (-duration, (node-id, edge-id))
 
         vector<bool> visited(n, false); // no trees visited
+        vector<bool> taken(e, false);
 
         int c_visited = 1;
         visited[hives[ip]] = true;
@@ -54,9 +55,11 @@ void do_case(int t) {
 
         while(c_visited < n) {
             int top = pq.top().second.first;
+            int top_e = pq.top().second.second;
             pq.pop();
 
             if(!visited[top]) {
+                taken[top_e] = true;
                 visited[top] = true;
                 c_visited++;
 
@@ -69,9 +72,15 @@ void do_case(int t) {
 
         }
 
-        while(pq.size()) { // remaining edges are not in the private network
+        /*while(pq.size()) { // remaining edges are not in the private network
             duration[pq.top().second.second][ip] = 999999;
             pq.pop();
+        }*/
+
+        for(int ie = 0; ie < e; ++ie) {
+            if(!taken[ie]) {
+                duration[ie][ip] = 999999;
+            }
         }
     }
 
