@@ -43,38 +43,18 @@ void do_case() {
     int source = 2*O;
     int drain = 2*O+1;
 
-    // in-out connections
-    for(int v = 0; v < O; ++v) {
-        addEdge(v, O+v, C, map_capacity, map_reverse, g);
-    }
-
-    // rows
+    // hallways and intersections
     for(int m = 0; m < M; ++m) {
-        // drains
-        addEdge(O+m*N, drain, 1, map_capacity, map_reverse, g);
-        addEdge(O+(m+1)*N-1, drain, 1, map_capacity, map_reverse, g);
-
-        // up/down
         for(int n = 0; n < N; ++n) {
-            if(m != 0) {
-                addEdge(O+(m*N)+n, (m-1)*N+n, 1, map_capacity, map_reverse, g);
-                addEdge(O+(m-1)*N+n, (m*N)+n, 1, map_capacity, map_reverse, g);
-            }
-        }
-    }
+            addEdge(m*N+n, O+m*N+n, C, map_capacity, map_reverse, g);
 
-    // columns
-    for(int n = 0; n < N; ++n) {
-        // drains
-        addEdge(N*M+n, drain, 1, map_capacity, map_reverse, g);
-        addEdge(N*(2*M-1)+n, drain, 1, map_capacity, map_reverse, g);
+            addEdge(O+m*N+n, n ? m*N+(n-1) : drain, 1, map_capacity, map_reverse, g);
 
-        // left/right
-        for(int m = 0; m < M; ++m) {
-            if(n != 0) {
-                addEdge((M*N)+m*N+n, m*N+n-1, 1, map_capacity, map_reverse, g);
-                addEdge((M*N)+m*N+n-1, m*N+n, 1, map_capacity, map_reverse, g);
-            }
+            addEdge(O+m*N+n, n < N-1 ? m*N+(n+1) : drain, 1, map_capacity, map_reverse, g);
+
+            addEdge(O+m*N+n, m ? (m-1)*N+n : drain, 1, map_capacity, map_reverse, g);
+
+            addEdge(O+m*N+n, m < M-1 ? (m+1)*N+n : drain, 1, map_capacity, map_reverse, g);
         }
     }
 
