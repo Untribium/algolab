@@ -4,33 +4,30 @@
 
 using namespace std;
 
-int T, N, M;
-
 bool too_small(vector<int> &s, vector<int> &w, int r) {
-    int iw = 0;
-    for(es : s) {
-
-        if(es < w[iw]) return true;
-
+    int iw = 0, is = 0;
+    while(iw < w.size() && is < s.size()) {
+        
+        if(s[is] < w[iw]) return true;
+        
         iw += r;
-
-        if(iw >= M) return false;
+        is += 1;
     }
-
-    return true;
+    return iw < w.size();
 }
 
 int main() {
 
     ios_base::sync_with_stdio(false);
 
+    int T;
     cin >> T;
 
     while(T--) {
+        int N, M;
         cin >> N >> M;
 
-        vector<int> s(N, 0);
-        vector<int> w(M, 0);
+        vector<int> s(N, 0), w(M, 0);
 
         for(int &es : s) {
             cin >> es;
@@ -48,20 +45,16 @@ int main() {
             continue;
         }
 
-        int a = 1, b = 1;
-
-        while(too_small(s, w, b)) {
-            b *= 2;
-        }
+        int a = ceil(M/N), b = M, r;
 
         while(a != b) {
-            if(too_small(s, w, (a+b)/2)) {
-                a = (a+b)/2+1;
+            if(too_small(s, w, r = (a+b)/2)) {
+                a = r+1;
             } else {
-                b = (a+b)/2;
+                b = r;
             }
         }
 
-        cout << (a-1)*3+2 << endl;
+        cout << a*3-1 << endl;
     }
 }
