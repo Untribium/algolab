@@ -11,6 +11,12 @@ typedef Exact_predicates_inexact_constructions_kernel K;
 typedef Point_2<K> P2;
 typedef Segment_2<K> S2;
 
+bool contains(vector<P2>& et, P2 p) {
+    return !right_turn(et[0], et[1], p) &&
+           !right_turn(et[2], et[3], p) &&
+           !right_turn(et[4], et[5], p);
+}
+
 int main() {
 
     ios_base::sync_with_stdio(false);
@@ -53,13 +59,8 @@ int main() {
 
         for(int it = 0; it < t.size(); ++it) {
             for(int is = 0; is < s.size(); ++is) {
-                if(!right_turn(t[it][0], t[it][1], s[is].source()) &&
-                   !right_turn(t[it][2], t[it][3], s[is].source()) &&
-                   !right_turn(t[it][4], t[it][5], s[is].source()) &&
-                   !right_turn(t[it][0], t[it][1], s[is].target()) &&
-                   !right_turn(t[it][2], t[it][3], s[is].target()) &&
-                   !right_turn(t[it][4], t[it][5], s[is].target())) {
-                       c[it].push_back(is);
+                if(contains(t[it], s[is].source()) && contains(t[it], s[is].target())) {
+                    c[it].push_back(is);
                 }
             }
         }
@@ -72,8 +73,7 @@ int main() {
         while(true) {
             if(v == s.size() && l < r) {
                 for(int ec : c[l]) {
-                    g[ec]--;
-                    if(!g[ec]) {
+                    if(!--g[ec]) {
                         v--;
                     }
                 }
@@ -82,10 +82,9 @@ int main() {
                 if(++r == t.size()) break;
 
                 for(int ec : c[r]) {
-                    if(!g[ec]) {
+                    if(!g[ec]++) {
                         v++;
                     }
-                    g[ec]++;
                 }
             }
 
