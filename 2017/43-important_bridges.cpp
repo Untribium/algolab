@@ -19,13 +19,13 @@ int main() {
     cin >> T;
 
     while(T--) {
-        unsigned int V, E;
+        uint V, E;
         cin >> V >> E;
 
         Graph g(V+E);
         vector<pair<int, int> > p;
 
-        for(unsigned int ie = 0; ie < E; ++ie) {
+        for(uint ie = 0; ie < E; ++ie) {
             int u, v;
             cin >> u >> v;
 
