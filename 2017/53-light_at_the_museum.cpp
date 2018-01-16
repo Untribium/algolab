@@ -36,7 +36,9 @@ int main() {
             }
         }
 
-        map<vector<int>, int> m1;
+        int r = 100;
+
+        map<vector<int>, int> m;
 
         for(int id = 0; id < (1 << S/2); ++id) {
 
@@ -45,25 +47,23 @@ int main() {
 
             for(uint ir = 0; ir < R; ++ir) {
 
-                d[ir] = b[ir] - t[ir];
+                d[ir] = 0;
                 s = 0;
 
                 for(uint is = 0; is < S/2; ++is) {
                     if((id >> is) & 1) {
                         d[ir] += e[ir][is];
-                        s++; // wasteful, oh well
+                        s++;
                     }
                 }
             }
 
-            if(m1.find(d) != m1.end()) {
-                m1[d] = min(m1[d], s);
+            if(m.find(d) != m.end()) {
+                m[d] = min(m[d], s);
             } else {
-                m1.emplace(d, s);
+                m.emplace(d, s);
             }
         }
-
-        map<vector<int>, int> m2;
 
         for(int id = 0; id < (1 << (S-S/2)); ++id) {
 
@@ -72,34 +72,24 @@ int main() {
 
             for(uint ir = 0; ir < R; ++ir) {
 
-                d[ir] = b[ir] - t[ir];
+                d[ir] = t[ir] - b[ir];
                 s = 0;
 
                 for(uint is = 0; is < (S-S/2); ++is) {
                     if((id >> is) & 1) {
-                        d[ir] += e[ir][is];
-                        s++; // wasteful, oh well
+                        d[ir] += e[ir][S/2+is];
+                        s++;
                     }
                 }
             }
 
-            if(m2.find(d) != m2.end()) {
-                m2[d] = min(m2[d], s);
-            } else {
-                m2.emplace(d, s);
+            if(m.find(d) != m.end()) {
+                r = min(r, m[d]+s);
             }
         }
 
-        int s = 100;
-
-        for(auto em1 : m1) {
-            if(m2.find(em1.first) != m2.end()) {
-                s = min(s, em1.second+m2[em1.first]);
-            }
-        }
-
-        if(s < 100) {
-            cout << s << endl;
+        if(r < 100) {
+            cout << r << endl;
         } else {
             cout << "impossible" << endl;
         }
@@ -153,10 +143,7 @@ int main() {
         //
         //
         // }
-
-
-
-
-
     }
+
+    return 0;
 }
