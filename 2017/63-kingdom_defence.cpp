@@ -7,14 +7,14 @@ using namespace std;
 using namespace boost;
 
 typedef adjacency_list_traits<vecS, vecS, directedS>    Traits;
+typedef Traits::edge_descriptor                         Edge;
+typedef Traits::vertex_descriptor                       Vertex;
+
 typedef adjacency_list<vecS, vecS, directedS,
     no_property,
     property<edge_capacity_t, int,
-    property<edge_reverse_t, Traits::edge_descriptor,
-    property<edge_residual_capacity_t, int> > > >       Graph;
-
-typedef Traits::edge_descriptor                         Edge;
-typedef Traits::vertex_descriptor                       Vertex;
+    property<edge_residual_capacity_t, int,
+    property<edge_reverse_t, Edge > > > >               Graph;
 
 typedef property_map<Graph, edge_capacity_t>::type      CapacityMap;
 typedef property_map<Graph, edge_reverse_t>::type       ReverseMap;
