@@ -9,7 +9,6 @@ using namespace CGAL;
 typedef Exact_predicates_inexact_constructions_kernel K;
 
 typedef Point_2<K> P2;
-typedef Ray_2<K> R2;
 typedef Direction_2<K> D2;
 
 int main() {
@@ -31,24 +30,18 @@ int main() {
             long long o, x, y, dy;
             cin >> o >> x >> y;
 
-            d[in] = make_tuple(D2(x, std::max(y-o, o-y)), (y < o), o, in);
+            d[in] = make_tuple(D2(x, (y < o ? o-y : y-o)), (y < o), o, in);
         }
 
         sort(d.begin(), d.end());
 
         vector<int> r;
 
-        D2 dl; bool fl; long long ol; int il;
-        tie(dl, fl, ol, il) = d[0];
+        D2 dl, dc; bool fl, fc; long long ol, oc; int il, ic;
 
-        r.push_back(il);
+        long long tho, ho = tho = LLONG_MIN, tlo, lo = tlo = LLONG_MAX;
 
-        long long tho = ol, tlo = ol;
-        long long ho = LLONG_MIN, lo = LLONG_MAX;
-
-        for(int in = 1; in < N; in++) {
-
-            D2 dc; bool fc; long long oc; int ic;
+        for(int in = 0; in < N; in++) {
 
             tie(dc, fc, oc, ic) = d[in];
 
