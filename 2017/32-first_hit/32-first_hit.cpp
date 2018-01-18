@@ -23,7 +23,7 @@ double floor_to_double(const K::FT& x) {
 int main() {
 
     ios_base::sync_with_stdio(false);
-    std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(0);
+    cout << setiosflags(ios::fixed) << setprecision(0);
 
     while(true) {
         int N;
