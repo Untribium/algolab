@@ -1,15 +1,42 @@
 #include<iostream>
 #include<algorithm>
-
-#include<CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include<tuple>
+#include<vector>
+#include<limits.h>
 
 using namespace std;
-using namespace CGAL;
 
-typedef Exact_predicates_inexact_constructions_kernel K;
+typedef unsigned long long ulolo;
 
-typedef Point_2<K> P2;
-typedef Direction_2<K> D2;
+struct rider {
+    uint ax, bx, ay, by;
+    bool f;
+    long long o;
+    int i;
+};
+
+tuple<ulolo, ulolo, bool> mult(const rider &r1, const rider &r2) {
+    // cout << r1.ax << " " << r2.ay << " " << (r1.f ? "true" : "false") << " " << (r2.f ? "true" : "false") << endl;
+
+    ulolo q1, q2, g0, g1, g2;
+
+    g0 = r1.ay * r2.ax;
+    g1 = r1.ay * r2.bx;
+    g2 = r1.by * r2.ax;
+
+    q1 = g0 + (g1 << 32) + (g2 << 32);
+    q2 = r1.by * r2.bx;
+
+    return make_tuple(q1, q2, r1.f);
+}
+
+bool operator<(const rider &r1, const rider &r2) {
+    return mult(r1, r2) < mult(r2, r1);
+}
+
+bool operator!=(const rider &r1, const rider &r2) {
+    return mult(r1, r2) != mult(r2, r1);
+}
 
 int main() {
 
@@ -24,40 +51,67 @@ int main() {
         int N;
         cin >> N;
 
-        vector<tuple<D2, bool, long long, int> > d(N);
+        vector<rider> d(N);
 
         for(int in = 0; in < N; ++in) {
-            long long o, x, y, dy;
-            cin >> o >> x >> y;
+            long long x, y;
+            cin >> d[in].o >> x >> y;
 
-            d[in] = make_tuple(D2(x, (y < o ? o-y : y-o)), (y < o), o, in);
+            d[in].f = (y < d[in].o);
+            y = d[in].f ? d[in].o - y : y - d[in].o;
+
+            d[in].ax = x & UINT_MAX;
+            d[in].bx = x >> 32;
+            d[in].ay = y & UINT_MAX;
+            d[in].by = y >> 32;
+
+            d[in].i = in;
+
+            // d[in] = make_tuple(D2(x, (y < o ? o-y : y-o)), (y < o), o, in);
         }
 
         sort(d.begin(), d.end());
 
+        // for(auto ed : d) {
+        //     cout << ed.i << endl;
+        // }
+
         vector<int> r;
 
-        D2 dl, dc; bool fl, fc; long long ol, oc; int il, ic;
+        rider l, c;
+        // D2 dl, dc; bool fl, fc; long long ol, oc; int il, ic;
 
         long long tho, ho = tho = LLONG_MIN, tlo, lo = tlo = LLONG_MAX;
 
         for(int in = 0; in < N; in++) {
 
-            tie(dc, fc, oc, ic) = d[in];
+            // tie(dc, fc, oc, ic) = d[in];
+            c = d[in];
 
-            if(dc != dl || fc != fl) {
+            if(l != c) {
                 ho = std::max(ho, tho);
                 lo = std::min(lo, tlo);
             }
 
-            if(fc && oc < lo || !fc && oc > ho) {
-                r.push_back(ic);
+            // if(dc != dl || fc != fl) {
+            //     ho = std::max(ho, tho);
+            //     lo = std::min(lo, tlo);
+            // }
+
+            if((c.f && c.o < lo) || (!c.f && c.o > ho)) {
+                r.push_back(c.i);
             }
 
-            tlo = std::min(tlo, oc);
-            tho = std::max(tho, oc);
+            // if(fc && oc < lo || !fc && oc > ho) {
+            //     r.push_back(ic);
+            // }
 
-            dl = dc; fl = fc;
+            tlo = std::min(tlo, c.o);
+            tho = std::max(tho, c.o);
+
+            l = c;
+
+            // dl = dc; fl = fc;
 
         }
 
