@@ -11,14 +11,6 @@ typedef Gmpz ET;
 typedef Quadratic_program<int> QP;
 typedef Quadratic_program_solution<ET> QS;
 
-double floor_to_double(Quotient<ET> q) {
-
-}
-
-double ceil_to_double(Quotient<ET> q) {
-
-}
-
 int main() {
 
     ios_base::sync_with_stdio(false);
@@ -103,8 +95,8 @@ int main() {
             }
 
         } else {
-            p2.set_d(0, 0, 2*A);
-            p2.set_c(1,    B);
+            p2.set_d(0, 0,  2*A);
+            p2.set_c(1,     B);
 
             p2.set_b(   1, -A*B);
 
