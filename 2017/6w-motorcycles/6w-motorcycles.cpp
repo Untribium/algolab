@@ -5,8 +5,6 @@
 
 using namespace std;
 
-typedef unsigned long long ulolo;
-
 struct rider {
     uint ax, bx, ay, by;
     long long x, y;
