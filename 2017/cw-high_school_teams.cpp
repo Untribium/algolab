@@ -49,8 +49,8 @@ int main() {
             int d, r;
             tie(d, r) = dot(a1, s1);
 
-            for(int ia = 0; ia < (int) a1.size(); ++ia) {
-                if((a1[ia] += 1) %= 3) break;
+            for(char &ea : a1) {
+                if((ea += 1) %= 3) break;
             }
 
             if(r > K) continue;
@@ -74,8 +74,8 @@ int main() {
             int d, r;
             tie(d, r) = dot(a2, s2);
 
-            for(int ia = 0; ia < (int) a2.size(); ++ia) {
-                if((a2[ia] += 1) %= 3) break;
+            for(char &ea : a2) {
+                if((ea += 1) %= 3) break;
             }
 
             if(r > K) continue;
