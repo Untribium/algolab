@@ -18,53 +18,29 @@ int main() {
 
     QP p1(SMALLER, false, 0, false, 0);
 
-    p1.set_c(1,     0); // set in case
-    p1.set_d(0, 0,  0); // set in case
+    p1.set_c(1,     0);                                                                 // set in case
+    p1.set_d(0, 0,  0);                                                                 // set in case
 
-    // x,y >= 0
-    p1.set_l(0, true, 0);
-    p1.set_l(1, true, 0);
+    p1.set_l(0, true, 0); p1.set_l(1, true, 0);                                         // x,y >= 0
 
-    // x + y <= 4
-    p1.set_a(0, 0,  1);
-    p1.set_a(1, 0,  1);
-    p1.set_b(   0,  4);
+    p1.set_a(0, 0,  1);   p1.set_a(1, 0,  1);   p1.set_b(   0,  4);                     // x + y <= 4
 
-    // 4x + 2y <= ab
-    p1.set_a(0, 1,  4);
-    p1.set_a(1, 1,  2);
-    p1.set_b(   1,  0); // set in case
+    p1.set_a(0, 1,  4);   p1.set_a(1, 1,  2);   p1.set_b(   1,  0);                     // 4x + 2y <= ab, ab set in case
 
-    // -x + y <= 1
-    p1.set_a(0, 2, -1);
-    p1.set_a(1, 2,  1);
-    p1.set_b(   2,  1);
+    p1.set_a(0, 2, -1);   p1.set_a(1, 2,  1);   p1.set_b(   2,  1);                     // -x + y <= 1
 
     QP p2(LARGER, false, 0, false, 0);
 
-    p2.set_c(1,     0); // set in case
-    p2.set_d(0, 0,  0); // set in case
-    p2.set_d(2, 2,  2);
+    p2.set_c(1,     0);                                                                 // set in case
+    p2.set_d(0, 0,  0);                         p2.set_d(2, 2,  2);                     // 0,0 set in case
 
-    // x,y <= 0
-    p2.set_u(0, true, 0);
-    p2.set_u(1, true, 0);
+    p2.set_u(0, true, 0); p2.set_u(1, true, 0);                                         // x,y <= 0
 
-    // x + y >= -4
-    p2.set_a(0, 0,  1);
-    p2.set_a(1, 0,  1);
-    p2.set_b(   0, -4);
+    p2.set_a(0, 0,  1);   p2.set_a(1, 0,  1);                       p2.set_b(   0, -4); // x + y >= -4
 
-    // 4x + 2y + z^2 >= -ab
-    p2.set_a(0, 1,  4);
-    p2.set_a(1, 1,  2);
-    p2.set_a(2, 1,  1);
-    p2.set_b(   1,  0); // set in case
+    p2.set_a(0, 1,  4);   p2.set_a(1, 1,  2);   p2.set_a(2, 1,  1); p2.set_b(   1,  0); // 4x + 2y + z^2 >= -ab, -ab set in case
 
-    // -x + y >= -1
-    p2.set_a(0, 2, -1);
-    p2.set_a(1, 2,  1);
-    p2.set_b(   2, -1);
+    p2.set_a(0, 2, -1);   p2.set_a(1, 2,  1);   p2.set_b(   2, -1);                     // -x + y >= -1
 
     while(true) {
 
