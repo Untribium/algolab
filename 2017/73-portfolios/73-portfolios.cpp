@@ -40,7 +40,7 @@ int main() {
                 int v;
                 cin >> v;
 
-                p.set_d(in, jn, 2*v);
+                if(jn <= in) p.set_d(in, jn, 2*v);
             }
         }
 
