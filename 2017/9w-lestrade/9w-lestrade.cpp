@@ -12,9 +12,8 @@ using namespace CGAL;
 typedef Exact_predicates_inexact_constructions_kernel   K;
 typedef Point_2<K>                                      P2;
 typedef Delaunay_triangulation_2<K>                     DT;
-typedef Gmpzf                                           ET;
-typedef Quadratic_program<ET>                           QP;
-typedef Quadratic_program_solution<ET>                  QPS;
+typedef Quadratic_program<double>                       QP;
+typedef Quadratic_program_solution<double>              QPS;
 
 int main() {
 
@@ -72,9 +71,9 @@ int main() {
         lp.set_b(1, V);
         lp.set_b(2, W);
 
-        QPS lps = solve_linear_program(lp, ET());
+        QPS lps = solve_linear_program(lp, double());
 
-        if(lps.is_infeasible() || lps.objective_value() > ET(Z)) {
+        if(lps.is_infeasible() || lps.objective_value() > Z) {
             cout << "H" << endl;
         } else {
             cout << "L" << endl;
