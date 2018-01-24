@@ -55,14 +55,6 @@ int main() {
 
             if(r > K) continue;
 
-            if(m.find(d) == m.end()) {
-                m.emplace(d, unordered_map<char, int>{});
-            }
-
-            if(m[d].find(r) == m[d].end()) {
-                m[d].emplace(r, 0);
-            }
-
             m[d][r]++;
         }
 
