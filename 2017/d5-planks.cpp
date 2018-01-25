@@ -1,19 +1,17 @@
-#include<iostream>
-#include<set>
-#include<map>
-#include<cmath>
-#include<vector>
-#include<bitset>
-#include<algorithm>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-pair<vector<long long>, long long> dot(vector<char> &a, vector<int> &l) {
+long long sum;
+
+pair<array<long long,4>, long long> dot(vector<char> &a, vector<int> &l) {
 
     vector<vector<long long> > s(4, vector<long long>(3, 0));
+    array<long long, 4> r;
 
     for(long long ia = 0; ia < (long long) a.size(); ++ia) {
         s[a[ia]][0] += l[ia]; // total length
+        if(s[a[ia]][0] > sum/4) return make_pair(r, 0LL);
         s[a[ia]][1] ^= (ia << (4*s[a[ia]][2]));
         s[a[ia]][2] += 1;     // number of planks
     }
@@ -21,10 +19,8 @@ pair<vector<long long>, long long> dot(vector<char> &a, vector<int> &l) {
     sort(s.begin(), s.end());
 
     long long c = 0, o = 0; // composite, offset
-    vector<long long> r(4);
 
     for(int is = 0; is < (int) s.size(); ++is) {
-        // cout << s[is][0] << " " << bitset<40>(s[is][1]) << " " << s[is][2] << " " << endl;
         c ^= (s[is][1] << o);
         o += (s[is][2]*4);
         c ^= (15 << o); // add 1111 between sides for uniqueness
@@ -32,22 +28,14 @@ pair<vector<long long>, long long> dot(vector<char> &a, vector<int> &l) {
         r[is] = s[is][0];
     }
 
-    // cout << bitset<56>(c) << endl;
-
     return make_pair(r, c);
 }
 
 char msb(vector<char> &a) {
-    char msb = 0;
-
     for(int ia = a.size()-1; ia >= 0; --ia) {
-        if(a[ia]){
-            msb = a[ia];
-            break;
-        }
+        if(a[ia]) return a[ia];
     }
-
-    return msb;
+    return 0;
 }
 
 bool valid(vector<char> &a) {
@@ -79,7 +67,8 @@ int main() {
         cin >> N;
 
         vector<int> l1(N/2), l2(N-N/2);
-        long long sum = 0, max = 0;
+        long long max = 0;
+        sum = 0;
 
         for(int &el : l1) {
             cin >> el;
@@ -99,99 +88,64 @@ int main() {
         }
 
         vector<char> a1(l1.size(), 0), a2(l2.size(), 0);
-        map<vector<long long>, int> m;
+        map<array<long long,4>, int> m;
         set<long long> s;
 
         for(int i = 0; i < pow(4, a1.size()-1); ++i) {
 
-            if(msb(a1) > 1){
+            if(msb(a1) > 1 || !valid(a1)){
                 for(char &ea : a1) if((ea += 1) %= 4) break;
                 continue;
             }
 
-            if(!valid(a1)){
-                for(char &ea : a1) if((ea += 1) %= 4) break;
-                continue;
-            }
-
-            // cout << "run" << endl;
-
-            vector<long long> d;
+            array<long long,4> d;
             long long u;
             tie(d, u) = dot(a1, l1);
 
             for(char &ea : a1) if((ea += 1) %= 4) break;
 
-            if(d[3]*4 > sum) continue;
+            if(!u) continue;
 
             if(s.insert(u).second) {
-                // cout << "insert" << endl;
                 m[d]++;
             }
         }
-
-        // for(auto em : m) {
-        //     for(long long eem : em.first) {
-        //         cout << eem;
-        //     }
-        //     cout << ": " << em.second << endl;
-        // }
 
         s.clear();
         long long total = 0;
 
         for(int i = 0; i < pow(4, a2.size()-1); ++i) {
 
-            if(msb(a2) > 1){
+            if(msb(a2) > 1 || !valid(a2)){
                 for(char &ea : a2) if((ea += 1) %= 4) break;
                 continue;
             }
 
-            if(!valid(a2)){
-                for(char &ea : a2) if((ea += 1) %= 4) break;
-                continue;
-            }
-
-            // for(long long ea : a2) {
-            //     cout << ea;
-            // }
-            // cout << " i" << endl;
-
-            vector<long long> d;
+            array<long long,4> d;
             long long u;
             tie(d, u) = dot(a2, l2);
 
             for(char &ea : a2) if((ea += 1) %= 4) break;
 
-            vector<long long> r{sum/4-d[3], sum/4-d[2], sum/4-d[1], sum/4-d[0]};
+            if(!u) continue;
 
-            // for(long long er : r) {
-            //     cout << er;
-            // }
-            // cout << ": " << endl << bitset<56>(u) << endl;
-
-            if(d[3]*4 > sum) continue;
+            array<long long,4> r{sum/4-d[3], sum/4-d[2], sum/4-d[1], sum/4-d[0]};
 
             if(s.insert(u).second && m.find(r) != m.end()) {
-                // cout << "add" << endl;
 
-                int add = 1;
-                int count = 0;
-                int val = 0;
+                int count = 0, val = 0, add = m[r];
 
                 for(int k = 0; k < 4; ++k) {
-                    if(d[k] && d[k] < sum/4) {
-                        if(val != d[k]) {
-                            val = d[k];
-                            count = 1;
-                        } else {
-                            count++;
-                        }
-                        add *= count;
+                    if(d[k] && r[3-k]) {
+
+                        if(val != d[k]) count = 0;
+
+                        val = d[k];
+                        add *= ++count;
                     }
                 }
 
-                total += m[r]*add;
+                total += add;
             }
         }
 
