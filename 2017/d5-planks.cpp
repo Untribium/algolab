@@ -47,6 +47,21 @@ char msb(vector<char> &a) {
     return msb;
 }
 
+bool valid(vector<char> &a) {
+    vector<bool> f(4, false);
+    int top = 0;
+
+    for(int ia = a.size()-1; ia >= 0; --ia) {
+        if(!f[a[ia]] && top > a[ia]){
+            return false;
+        }
+        f[a[ia]] = true;
+        top = max(cur, (int) a[ia]);
+    }
+
+    return true;
+}
+
 int main() {
 
     ios_base::sync_with_stdio(false);
@@ -86,7 +101,12 @@ int main() {
 
         for(int i = 0; i < pow(4, a1.size()-1); ++i) {
 
-            if(msb(a1) > 1){
+            // if(msb(a1) > 1){
+            //     for(char &ea : a1) if((ea += 1) %= 4) break;
+            //     continue;
+            // }
+
+            if(!valid(a1)){
                 for(char &ea : a1) if((ea += 1) %= 4) break;
                 continue;
             }
@@ -110,6 +130,11 @@ int main() {
         for(int i = 0; i < pow(4, a2.size()-1); ++i) {
 
             if(msb(a2) > 1){
+                for(char &ea : a2) if((ea += 1) %= 4) break;
+                continue;
+            }
+
+            if(!valid(a2)){
                 for(char &ea : a2) if((ea += 1) %= 4) break;
                 continue;
             }
