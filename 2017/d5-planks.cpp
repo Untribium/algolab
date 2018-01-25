@@ -56,7 +56,7 @@ bool valid(vector<char> &a) {
             return false;
         }
         f[a[ia]] = true;
-        top = max(cur, (int) a[ia]);
+        top = max(top, (int) a[ia]);
     }
 
     return true;
@@ -129,10 +129,10 @@ int main() {
 
         for(int i = 0; i < pow(4, a2.size()-1); ++i) {
 
-            if(msb(a2) > 1){
-                for(char &ea : a2) if((ea += 1) %= 4) break;
-                continue;
-            }
+            // if(msb(a2) > 1){
+            //     for(char &ea : a2) if((ea += 1) %= 4) break;
+            //     continue;
+            // }
 
             if(!valid(a2)){
                 for(char &ea : a2) if((ea += 1) %= 4) break;
