@@ -37,12 +37,11 @@ int main() {
         vector<int> a(W);
         vector<P2> pw(W), ps(S);
 
-        vector<vector<pair<int, int> > > ow(W);
-        vector<vector<pair<int, int> > > os(S);
+        vector<vector<pair<int, int> > > ow(W), os(S);
 
         vector<int> r(W*S);
 
-        QP lp(EQUAL, true, 0, false, 0);
+        QP lp(SMALLER, true, 0, false, 0);
 
         for(int iw = 0; iw < W; ++iw) {
             int xw, yw, sw;
@@ -51,7 +50,6 @@ int main() {
             pw[iw] = P2(xw, yw);
 
             lp.set_b(iw, sw);                        // supply
-            lp.set_r(iw, SMALLER);
         }
 
         for(int is = 0; is < S; ++is) {
@@ -61,9 +59,8 @@ int main() {
             ps[is] = P2(xs, ys);
 
             lp.set_b(W+is,   d);                     // demand
-            lp.set_r(W+is, EQUAL);
+            lp.set_r(W+is,   EQUAL);
             lp.set_b(W+S+is, 100*u);                 // alcohol
-            lp.set_r(W+S+is, SMALLER);
         }
 
         for(int iw = 0; iw < W; ++iw) {
@@ -71,8 +68,7 @@ int main() {
                 int rev;
                 cin >> rev;
 
-                // lp.set_c(iw*S+is, -r*100);         // revenue
-                r[iw*S+is] = rev*100;
+                r[iw*S+is] = rev*100;                // revenue
 
                 lp.set_a(iw*S+is, iw,     1);        // supply
 
@@ -84,7 +80,8 @@ int main() {
         int co = 0;
 
         for(int ic = 0; ic < C; ++ic) {
-            int xc, yc, rc;
+            int xc, yc;
+            K::FT rc;
             cin >> xc >> yc >> rc;
 
             P2 cc(xc, yc);
@@ -92,22 +89,20 @@ int main() {
             bool in = false;
 
             for(int iw = 0; iw < W; ++iw) {
-                if(squared_distance(cc, pw[iw]) < rc) {
+                if(squared_distance(cc, pw[iw]) < rc*rc) {
                     in = true;
                     ow[iw].emplace_back(-rc, co);
                 }
             }
 
             for(int is = 0; is < S; ++is) {
-                if(squared_distance(cc, ps[is]) < rc) {
+                if(squared_distance(cc, ps[is]) < rc*rc) {
                     in = true;
                     os[is].emplace_back(-rc, co);
                 }
             }
 
-            if(in) {
-                co++;
-            }
+            if(in) co++;
         }
 
         for(int iw = 0; iw < W && C; ++iw) {
@@ -128,8 +123,8 @@ int main() {
                         ps++; pw++;
                     }
 
-                    while(ps++ < (int) os[is].size()) rev--;
-                    while(pw++ < (int) ow[iw].size()) rev--;
+                    rev -= os[is].size() - ps;
+                    rev -= ow[iw].size() - pw;
                 }
 
                 lp.set_c(iw*S+is, -rev);
