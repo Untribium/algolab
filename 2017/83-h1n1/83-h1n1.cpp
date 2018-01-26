@@ -35,16 +35,40 @@ int main() {
         DT t;
         t.insert(p.begin(), p.end());
 
-        unordered_map<DT::Face_handle, vector<pair<DT::Face_handle, long long> > > m;
+        unordered_map<DT::Face_handle, vector<pair<long long, DT::Face_handle> > > m;
+        priority_queue<pair<long long, DT::Face_handle> > q;
+        unordered_map<DT::Face_handle, long long> b;
 
-        for(auto it = t.finite_faces_begin(); it != t.finite_faces_end(); ++it) {
+        for(auto it = t.all_faces_begin(); it != t.all_faces_end(); ++it) {
+            if(t.is_infinite(it)) {
+                q.emplace(LLONG_MAX, it); continue;
+            }
+
             for(int i = 0; i < 3; ++i) {
                 long long w = squared_distance(it->vertex((i+1)%3)->point(), it->vertex((i+2)%3)->point());
-                m[it].emplace_back(it->neighbor(i), w);
+                DT::Face_handle f = it->neighbor(i);
+
+                if(t.is_infinite(f)) {
+                    m[f].emplace_back(w, it);
+                } else {
+                    m[it].emplace_back(w, f);
+                }
             }
         }
 
-        bool k = t.finite_faces_begin() == t.finite_faces_end();
+        while(q.size()) {
+            pair<long long, DT::Face_handle> top = q.top();
+            q.pop();
+
+            if(b.find(top.second) != b.end()) continue;
+
+            b[top.second] = top.first;
+
+            for(auto em : m[top.second]) {
+                if(b.find(em.second) != b.end()) continue;
+                q.emplace(std::min(em.first, top.first), em.second);
+            }
+        }
 
         int M;
         cin >> M;
@@ -56,35 +80,10 @@ int main() {
             P2 e(x, y);
 
             if(squared_distance(t.nearest_vertex(e)->point(), e) < d) {
-                cout << "n";
-                continue;
-            } else if(k) {
-                cout << "y";
-                continue;
+                cout << "n"; continue;
             }
 
-            unordered_map<DT::Face_handle, bool> v;
-            queue<DT::Face_handle> q;
-
-            DT::Face_handle f = t.locate(e);
-            q.push(f);
-            v[f] = true;
-
-            while(q.size()) {
-                f = q.front();
-                q.pop();
-
-                if(t.is_infinite(f)) break;
-
-                for(auto em : m[f]) {
-                    if(d*4 <= em.second && !v[em.first]) {
-                        q.push(em.first);
-                        v[em.first] = true;
-                    }
-                }
-            }
-
-            cout << (t.is_infinite(f) ? "y" : "n");
+            cout << (b[t.locate(e)] >= d*4 ? "y" : "n");
         }
 
         cout << endl;
