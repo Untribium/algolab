@@ -39,17 +39,14 @@ int main() {
         priority_queue<pair<long long, DT::Face_handle> > q;
         unordered_map<DT::Face_handle, long long> b;
 
-        for(auto it = t.all_faces_begin(); it != t.all_faces_end(); ++it) {
-            if(t.is_infinite(it)) {
-                q.emplace(LLONG_MAX, it); continue;
-            }
-
+        for(auto it = t.finite_faces_begin(); it != t.finite_faces_end(); ++it) {
             for(int i = 0; i < 3; ++i) {
                 long long w = squared_distance(it->vertex((i+1)%3)->point(), it->vertex((i+2)%3)->point());
                 DT::Face_handle f = it->neighbor(i);
 
                 if(t.is_infinite(f)) {
                     m[f].emplace_back(w, it);
+                    q.emplace(LLONG_MAX, f);
                 } else {
                     m[it].emplace_back(w, f);
                 }
