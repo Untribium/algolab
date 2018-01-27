@@ -43,7 +43,7 @@ int main() {
         int N, S, P = 100, A = 100000, L = 0;
         cin >> N >> S;
 
-        int c = 2*S+2;
+        int c = 2;
         Graph g(c);
 
         WeightMap wm = get(edge_weight, g);
@@ -58,11 +58,11 @@ int main() {
 
             L += rl;
 
-            v[is].emplace(0, is);
-            flow_edge(2*S, is, rl, 0, wm, cm, rm, g);
+            flow_edge(0, c, rl, 0, wm, cm, rm, g);
+            v[is].emplace(0, c++);
 
-            v[is].emplace(A, S+is);
-            flow_edge(S+is, 2*S+1, INT_MAX, 0, wm, cm, rm, g);
+            flow_edge(c, 1, INT_MAX, 0, wm, cm, rm, g);
+            v[is].emplace(A, c++);
         }
 
         for(int in = 0; in < N; ++in) {
@@ -82,13 +82,13 @@ int main() {
         }
 
         for(int iv = 0; iv < (int) v.size(); ++iv) {
-            for(auto iev = v[iv].begin(); iev != --v[iv].end(); /* in loop */) {
+            for(auto iev = v[iv].begin(); iev != --v[iv].end(); /* ++ in loop */) {
                 pair<int, int> p = *iev, c = *(++iev); // previous, current
                 flow_edge(p.second, c.second, INT_MAX, P*(c.first-p.first), wm, cm, rm, g);
             }
         }
 
-        successive_shortest_path_nonnegative_weights(g, 2*S, 2*S+1);
+        successive_shortest_path_nonnegative_weights(g, 0, 1);
 
         cout << L*A*P-find_flow_cost(g) << endl;
     }
