@@ -9,17 +9,15 @@ typedef Exact_predicates_inexact_constructions_kernel       K;
 typedef Point_2<K>                                          P2;
 typedef Delaunay_triangulation_2<K>                         DT;
 
-pair<vector<bool>, int> covered(vector<vector<pair<int, long long> > > &n, long long p, vector<pair<int, long long> > &s, vector<pair<int, long long> > &e) {
-    vector<int> v(n.size(), 0);
-    int c; // current comp
+int covered(vector<vector<pair<int, long long> > > &n, long long p, vector<pair<int, long long> > &s, vector<pair<int, long long> > &e, bool print) {
+    vector<int> v(n.size(), 0); // component map
 
     for(int iv = 0; iv < (int) v.size(); ++iv) {
         if(v[iv]) continue;
-        c = iv+1;
 
         queue<int> q;
         q.push(iv);
-        v[iv] = c;
+        v[iv] = iv+1; // +1, so 0 means 'not visited'
 
         while(q.size()) {
             int top = q.front(); q.pop();
@@ -27,20 +25,20 @@ pair<vector<bool>, int> covered(vector<vector<pair<int, long long> > > &n, long 
             for(auto en : n[top]) {
                 if(v[en.first] || en.second > p) continue;
                 q.push(en.first);
-                v[en.first] = c;
+                v[en.first] = iv+1;
             }
         }
     }
 
-    int count = 0;
-    vector<bool> g(s.size(), false);
+    int count = 0; bool b;
 
     for(int im = 0; im < (int) s.size(); ++im) {
-        g[im] = 4*s[im].second <= p && 4*e[im].second <= p && v[s[im].first] == v[e[im].first];
-        if(g[im]) ++count;
+        b = 4*s[im].second <= p && 4*e[im].second <= p && v[s[im].first] == v[e[im].first];
+        if(b) ++count;
+        if(print) cout << (b ? "y" : "n");
     }
 
-    return make_pair(g, count);
+    return count;
 }
 
 int main() {
@@ -53,9 +51,8 @@ int main() {
 
     while(T--) {
 
-        int N, M; long long W; long long P;
-        cin >> N >> M >> W;
-        P = W;
+        int N, M; long long P;
+        cin >> N >> M >> P;
 
         map<P2, int> j;
         vector<P2> p(N);
@@ -71,8 +68,7 @@ int main() {
         DT t;
         t.insert(p.begin(), p.end());
 
-        vector<pair<int, long long> > s(M);
-        vector<pair<int, long long> > e(M);
+        vector<pair<int, long long> > s(M), e(M);
 
         for(int im = 0; im < M; ++im) {
             int xs, ys, xe, ye;
@@ -85,7 +81,7 @@ int main() {
             e[im] = make_pair(j[pe], squared_distance(pe, P2(xe, ye)));
         }
 
-        vector<vector<pair<int, long long> > > n(N); // neighbors
+        vector<vector<pair<int, long long> > > n(N);    // neighbors
 
         for(auto it = t.finite_edges_begin(); it != t.finite_edges_end(); ++it) {
             P2 v1 = t.segment(it).source();
@@ -96,45 +92,30 @@ int main() {
             n[j[v2]].emplace_back(j[v1], d);
         }
 
-        pair<vector<bool>, int> res1 = covered(n, P, s, e), res2;
-
-        for(bool eres1 : res1.first) cout << (eres1 ? "y" : "n");
-        cout << endl;
+        int c = covered(n, P, s, e, true);              // subtask #1
 
         long long l = 0, r = LLONG_MAX;
 
-        while(l != r) {
+        while(l != r) {                                 // subtask #2
             long long m = (l+r)/2;
-            res2 = covered(n, m, s, e);
-            if(res2.second < M) {
+            if(covered(n, m, s, e, false) < M) {
                 l = m+1;
             } else {
                 r = m;
             }
         }
-
-        cout << l << endl;
+        cout << endl << l << endl;
 
         l = 0, r = P;
 
-        while(l != r) {
+        while(l != r) {                                 // subtask #3
             long long m = (l+r)/2;
-            res2 = covered(n, m, s, e);
-            bool more = res2.second < res1.second;
-            if(!more) {
-                int im;
-                for(im = 0; im < M; ++im) {
-                    if(res1.first[im] && !res2.first[im]) break;
-                }
-                more = im < M;
-            }
-            if(more) {
+            if(covered(n, m, s, e, false) < c) {
                 l = m+1;
             } else {
                 r = m;
             }
         }
-
         cout << l << endl;
     }
 
