@@ -1,18 +1,15 @@
 #include<bits/stdc++.h>
 #include<CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include<CGAL/Delaunay_triangulation_2.h>
-#include<CGAL/Gmpz.h>
 
 using namespace std;
 using namespace CGAL;
 
 typedef Exact_predicates_inexact_constructions_kernel       K;
 typedef Point_2<K>                                          P2;
-typedef Segment_2<K>                                        S2;
 typedef Delaunay_triangulation_2<K>                         DT;
-typedef __uint128_t                                         bint;
 
-pair<vector<bool>, int> covered(vector<vector<pair<int, bint> > > &n, bint p, vector<pair<int, bint> > &s, vector<pair<int, bint> > &e) {
+pair<vector<bool>, int> covered(vector<vector<pair<int, long long> > > &n, long long p, vector<pair<int, long long> > &s, vector<pair<int, long long> > &e) {
     vector<int> v(n.size(), 0);
     int c; // current comp
 
@@ -56,7 +53,7 @@ int main() {
 
     while(T--) {
 
-        int N, M; long long W; bint P;
+        int N, M; long long W; long long P;
         cin >> N >> M >> W;
         P = W;
 
@@ -74,8 +71,8 @@ int main() {
         DT t;
         t.insert(p.begin(), p.end());
 
-        vector<pair<int, bint> > s(M);
-        vector<pair<int, bint> > e(M);
+        vector<pair<int, long long> > s(M);
+        vector<pair<int, long long> > e(M);
 
         for(int im = 0; im < M; ++im) {
             int xs, ys, xe, ye;
@@ -88,13 +85,12 @@ int main() {
             e[im] = make_pair(j[pe], squared_distance(pe, P2(xe, ye)));
         }
 
-        vector<vector<pair<int, bint> > > n(N); // neighbors
+        vector<vector<pair<int, long long> > > n(N); // neighbors
 
         for(auto it = t.finite_edges_begin(); it != t.finite_edges_end(); ++it) {
-            S2 seg = t.segment(it);
-            P2 v1 = seg.source();
-            P2 v2 = seg.target();
-            bint d = squared_distance(v1, v2);
+            P2 v1 = t.segment(it).source();
+            P2 v2 = t.segment(it).target();
+            long long d = squared_distance(v1, v2);
 
             n[j[v1]].emplace_back(j[v2], d);
             n[j[v2]].emplace_back(j[v1], d);
@@ -105,10 +101,10 @@ int main() {
         for(bool eres1 : res1.first) cout << (eres1 ? "y" : "n");
         cout << endl;
 
-        bint l = 0, r = ((bint) 1 << 53)*((bint) 1 << 53);
+        long long l = 0, r = LLONG_MAX;
 
         while(l != r) {
-            bint m = (l+r)/2;
+            long long m = (l+r)/2;
             res2 = covered(n, m, s, e);
             if(res2.second < M) {
                 l = m+1;
@@ -117,12 +113,12 @@ int main() {
             }
         }
 
-        cout << (long long) l << endl;
+        cout << l << endl;
 
         l = 0, r = P;
 
         while(l != r) {
-            bint m = (l+r)/2;
+            long long m = (l+r)/2;
             res2 = covered(n, m, s, e);
             bool more = res2.second < res1.second;
             if(!more) {
@@ -139,8 +135,7 @@ int main() {
             }
         }
 
-        cout << (long long) l << endl;
-
+        cout << l << endl;
     }
 
     return 0;
