@@ -43,29 +43,29 @@ int main() {
         CapacityMap mc = get(edge_capacity, g);
         ReverseMap mi = get(edge_reverse, g);
 
-        for(int in = 0; in < 2*N; in += 2) {
-            flow_edge(in, in+1, mc, mi, g);
+        for(int in = 0; in < N; ++in) {
+            flow_edge(in, N+in, mc, mi, g);
         }
 
         for(int im = 0; im < M; ++im) {
             int ra, rb;
             cin >> ra >> rb;
 
-            flow_edge(2*ra+1, 2*rb, mc, mi, g);
+            flow_edge(N+ra, rb, mc, mi, g);
         }
 
         for(int is = 0; is < S; ++is) {
             int rs;
             cin >> rs;
 
-            flow_edge(2*N, 2*rs, mc, mi, g);
+            flow_edge(2*N, rs, mc, mi, g);
         }
 
         for(int id = 0; id < D; ++id) {
             int rd;
             cin >> rd;
 
-            flow_edge(2*rd+1, 2*N+1, mc, mi, g);
+            flow_edge(N+rd, 2*N+1, mc, mi, g);
         }
 
         int f = push_relabel_max_flow(g, 2*N, 2*N+1);
