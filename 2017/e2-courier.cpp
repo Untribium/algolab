@@ -37,7 +37,7 @@ int main() {
 
     while(T--) {
 
-        int Z, J;
+        int Z, J, r;
         cin >> Z >> J;
 
         Graph g(2+Z+J);
@@ -45,18 +45,18 @@ int main() {
         ReverseMap mi = get(edge_reverse, g);
 
         for(int iz = 0; iz < Z; ++iz) {
-            cin >> rc;
-            flow_edge(Z+J, iz, rc, mc, mi, g);
+            cin >> r;
+            flow_edge(Z+J, iz, r, mc, mi, g);
         }
 
         vector<int> p(J);
         int sp = 0;
 
         for(int ij = 0; ij < J; ++ij) {
-            cin >> p[ij];
+            cin >> r;
 
-            sp += p[ij];
-            flow_edge(Z+ij, Z+J+1, p[ij], mc, mi, g);
+            sp += r;
+            flow_edge(Z+ij, Z+J+1, r, mc, mi, g);
         }
 
         for(int ij = 0; ij < J; ++ij) {
@@ -67,11 +67,12 @@ int main() {
                 int rz;
                 cin >> rz;
 
-                flow_edge(rz, Z+ij, p[ij], mc, mi, g);
+                flow_edge(rz, Z+ij, INT_MAX, mc, mi, g);
             }
         }
 
         int f = push_relabel_max_flow(g, Z+J, Z+J+1);
+        
         cout << (sp-f) << endl;
     }
 
