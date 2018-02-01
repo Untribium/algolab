@@ -20,10 +20,11 @@ int main() {
     
     while(T--) {
         
-        int H, C, N;
+        int H, C;
         cin >> H >> C;
         
-        N = H+C;
+        int N = H+C, L = std::min(30, N);
+        
         vector<array<ET, 31> > x(N), y(N), z(N);
         
         for(int in = 0; in < N; ++in) {
@@ -33,26 +34,20 @@ int main() {
             y[in][0] = 1;
             z[in][0] = 1;
             
-            for(int id = 2; id < 31; ++id) {
+            for(int id = 2; id < L+1; ++id) {
                 x[in][id] = x[in][id-1]*x[in][1];
                 y[in][id] = y[in][id-1]*y[in][1];
                 z[in][id] = z[in][id-1]*z[in][1];
             }
         }
         
-        if(!H || !C) {
-            cout << 0 << endl;
-            continue;
-        }
+        if(!H || !C) { cout << 0 << endl; continue; }
         
         int a = 0, b = 1;
         bool f = false;
         
-        Quadratic_program_options o;
-        o.set_pricing_strategy(QP_BLAND);
-        
         while(a != b) {
-            int D = std::min((a+b)/2, 30);
+            int D = std::min((a+b)/2, L);
             
             QP lp(EQUAL, false, 0, false, 0);
             
@@ -78,17 +73,19 @@ int main() {
                     }
                 }
             }
+        
+            Quadratic_program_options lpo;
+            lpo.set_pricing_strategy(QP_BLAND);
             
-            QPS lps = solve_linear_program(lp, ET(), o);
+            QPS lps = solve_linear_program(lp, ET(), lpo);
             
             if(lps.is_infeasible()) {
                 if(!f) {
-                    if(b < 30) b *= 2;
+                    if(D < L) b *= 2;
                     else break;
                 } else {
                     a = D+1;
                 }
-                
             } else {
                 f = true;
                 b = D;
