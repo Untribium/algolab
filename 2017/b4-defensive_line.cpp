@@ -51,7 +51,7 @@ int main() {
             }
         }
 
-        vector<vector<int> > dp(M, vector<int>(i.size()+1, 0));
+        vector<vector<int> > dp(M, vector<int>(i.size(), 0));
 
         for(int jdp = 1; jdp < (int) i.size(); ++jdp) {
             dp[0][jdp] = max(dp[0][jdp-1], i[jdp].second-i[jdp].first+1);
