@@ -2,8 +2,6 @@
 
 using namespace std;
 
-typedef tuple<int, int, int> tiii;
-
 int main() {
 
     ios_base::sync_with_stdio(false);
@@ -42,36 +40,37 @@ int main() {
             continue;
         }
 
-        vector<vector<tiii> > dp(M+1, vector<tiii>(i.size(), make_tuple(0, 1, 0)));
+        vector<int> b(i.size(), 0); // last compatible interval (1-based!)
+        l = 0;
 
-        for(int idp = 1; idp < (int) dp.size(); ++idp) {
-
-            int kdp = idp-1;
-
-            for(int jdp = idp; jdp < (int) dp[0].size(); ++jdp) {
-
-                // move along last row
-                while(kdp < jdp && -get<1>(dp[idp-1][kdp+1]) < i[jdp].first) {
-                    kdp++;
-                }
-
-                if(-get<1>(dp[idp-1][kdp]) < i[jdp].first) {
-                    get<0>(dp[idp][jdp]) = get<0>(dp[idp-1][kdp])+i[jdp].second-i[jdp].first+1;
-                    get<1>(dp[idp][jdp]) = -i[jdp].second;
-                    get<2>(dp[idp][jdp]) = get<2>(dp[idp-1][kdp])+1;
-                }
-
-                dp[idp][jdp] = max(dp[idp][jdp], dp[idp][jdp-1]);
+        for(int ii = 1; ii < (int) i.size(); ++ii) {
+            while(true) {
+                b[ii] = l;
+                if(i[l+1].second < i[ii].first) l++;
+                else break;
             }
         }
 
-        int out = get<0>(dp[M][i.size()-1]);
-        if(out && get<2>(dp[M][i.size()-1]) == M) {
-            cout << out << endl;
+        vector<vector<int> > dp(M, vector<int>(i.size()+1, 0));
+
+        for(int jdp = 1; jdp < (int) i.size(); ++jdp) {
+            dp[0][jdp] = max(dp[0][jdp-1], i[jdp].second-i[jdp].first+1);
+        }
+
+        for(int idp = 1; idp < M; ++idp) {
+            for(int jdp = 1; jdp < (int) i.size(); ++jdp) {
+                dp[idp][jdp] = dp[idp][jdp-1];
+                if(b[jdp] && dp[idp-1][b[jdp]]) {
+                    dp[idp][jdp] = max(dp[idp][jdp], dp[idp-1][b[jdp]]+i[jdp].second-i[jdp].first+1);
+                }
+            }
+        }
+
+        if(dp[M-1][i.size()-1]) {
+            cout << dp[M-1][i.size()-1] << endl;
         } else {
             cout << "fail" << endl;
         }
-
     }
 
     return 0;
