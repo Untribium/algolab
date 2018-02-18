@@ -21,14 +21,13 @@ int main() {
 
         int N, M; K::FT R;
         cin >> N >> M >> R;
-
         R *= R;
 
         vector<P2> s(N); // clients
-        map<P2, int> m; // mapping clients -> index
+        map<P2, int> m;  // mapping clients -> index
+        vector<vector<pair<int, K::FT> > > n(N);
 
-        for(int is = 0; is < (int) s.size(); ++is) {
-            int rx, ry;
+        for(int is = 0, rx, ry; is < (int) s.size(); ++is) {
             cin >> rx >> ry;
             m.emplace(s[is] = P2(rx, ry), is);
         }
@@ -36,76 +35,52 @@ int main() {
         DT t;
         t.insert(s.begin(), s.end());
 
-        vector<vector<pair<int, K::FT> > > n(N);
-
         for(auto ie = t.finite_edges_begin(); ie != t.finite_edges_end(); ++ie) {
             P2 v1 = t.segment(ie).source();
             P2 v2 = t.segment(ie).target();
-            K::FT d = squared_distance(v1, v2);
-            n[m[v1]].emplace_back(m[v2], d);
-            n[m[v2]].emplace_back(m[v1], d);
+            n[m[v1]].emplace_back(m[v2], squared_distance(v1, v2));
+            n[m[v2]].emplace_back(m[v1], squared_distance(v1, v2));
         }
 
-        vector<int> k(N, 0); // component (and visited)
-        vector<int> c(N, 0); // color
+        vector<int> c(N, 0); // component map (0 = not visited)
+        vector<vector<P2> > p(2);
 
         for(int in = 0; in < (int) c.size(); ++in) {
-            if(k[in]) continue;
-
-            queue<int> q;
-            q.push(in);
-            k[in] = in+1; // 0 means not visited
-            c[in] = 0;
+            if(c[in]) continue;
+            queue<pair<int, int> > q;
+            q.emplace(in, 0);
+            c[in] = in+1;
 
             while(q.size()) {
-                int top = q.front();
-                q.pop();
-
-                for(auto &en : n[top]) {
-                    if(k[en.first] || en.second > R) continue;
-                    k[en.first] = in+1;
-                    c[en.first] = 1-c[top];
-                    q.push(en.first);
+                pair<int, int> top = q.front(); q.pop();
+                for(auto &en : n[top.first]) {
+                    if(c[en.first] || en.second > R) continue;
+                    c[en.first] = in+1;
+                    p[1-top.second].push_back(s[en.first]);
+                    q.emplace(en.first, 1-top.second);
                 }
             }
         }
 
-        vector<P2> p0, p1;
-        for(int ic = 0; ic < (int) c.size(); ++ic) {
-            if(c[ic]) p1.push_back(s[ic]);
-            else p0.push_back(s[ic]);
-        }
-
-        DT t0, t1;
-        t0.insert(p0.begin(), p0.end());
-        t1.insert(p1.begin(), p1.end());
-
         bool f = true;
 
-        for(auto ie = t0.finite_edges_begin(); ie != t0.finite_edges_end(); ++ie) {
-            if(t0.segment(ie).squared_length() <= R) {
-                f = false; break;
+        for(int it = 0; it < 2; ++it) {
+            DT tc;
+            tc.insert(p[it].begin(), p[it].end());
+            for(auto ie = tc.finite_edges_begin(); ie != tc.finite_edges_end(); ++ie) {
+                if(tc.segment(ie).squared_length() <= R) {
+                    f = false; break;
+                }
             }
         }
 
-        for(auto ie = t1.finite_edges_begin(); f && ie != t1.finite_edges_end(); ++ie) {
-            if(t1.segment(ie).squared_length() <= R) {
-                f = false; break;
-            }
-        }
-
-        for(int im = 0; im < M; ++im) {
-            int xa, ya, xb, yb;
+        for(int im = 0, xa, ya, xb, yb; im < M; ++im) {
             cin >> xa >> ya >> xb >> yb;
-
-            if(!f) {
-                cout << "n"; continue;
-            }
 
             P2 a = P2(xa, ya), b = P2(xb, yb);
 
-            if(squared_distance(a, b) <= R) {
-                cout << "y"; continue;
+            if(!f || squared_distance(a, b) <= R) {
+                cout << (!f ? "n" : "y"); continue;
             }
 
             P2 u = t.nearest_vertex(a)->point();
@@ -115,9 +90,8 @@ int main() {
                 cout << "n"; continue;
             }
 
-            cout << (k[m[u]] == k[m[v]] ? "y" : "n");
+            cout << (c[m[u]] == c[m[v]] ? "y" : "n");
         }
-
         cout << endl;
     }
 
